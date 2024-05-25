@@ -47,52 +47,8 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-
-    <SafeAreaView >
-      <View style={styles.header}>
-        <Text style={styles.title}>SaySum</Text>
-        <Text style={styles.subtitle}>Monthly Spent</Text>
-        
-        <ScrollView 
-          horizontal={true} 
-          showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={styles.monthlyContainerContent}
-        >
-
-          {monthlyData.map((item) => (
-            <TouchableOpacity key={item.id} style={[styles.monthBox, !item.isActive && styles.inactiveMonthBox]} 
-            onPress={handleMonthSpent}
-            >
-              <View>
-                <Text style={[styles.monthText, !item.isActive && styles.inactiveMonthText]}>{item.month}</Text>
-                <Text style={[styles.amountText, !item.isActive && styles.inactiveAmountText]}>{item.amount}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      <View style={styles.holdButtonContainer}>
-        <TouchableOpacity style={styles.holdButton}>
-          <LinearGradient
-            colors={['#3558FF', 'transparent']}
-            style={styles.holdButtonGradient}
-            start={{ x: 0.5, y: 0.5 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text style={styles.holdText}>Hold to SaySum...</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-        data={categories}
-        renderItem={renderCategoryItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-      />
-
-    </SafeAreaView>
+      <Text>Open up App.js to start working on your app!</Text>
+      <StatusBar style="auto" />
     </View>
 
   );

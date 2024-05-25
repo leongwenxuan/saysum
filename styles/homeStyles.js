@@ -21,9 +21,6 @@ export default StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    position: 'absolute',
-    top: 81,
-    left: 21,
   },
   subtitle: {
     fontSize: 18,
@@ -31,11 +28,9 @@ export default StyleSheet.create({
     marginVertical: 10,
     alignSelf: 'center',
   },
-  monthlyContainer: {
+  monthlyContainerContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 20,
+    justifyContent: 'center',
   },
   monthBox: {
     padding: 20,
@@ -43,7 +38,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#007BFF',
-    width: '45%',
+    marginRight: 10,
   },
   inactiveMonthBox: {
     backgroundColor: '#f0f0f0',

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import styles from '../styles/homeStyles';
 import { LinearGradient } from 'expo-linear-gradient';
-
 
 const categoryData = [
   { id: '1', category: 'Clothes', amount: '$1,500.00', icon: '👕', color: '#FF6347' },
@@ -39,21 +37,28 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
       <View style={styles.header}>
         <Text style={styles.title}>SaySum</Text>
         <Text style={styles.subtitle}>Monthly Spent</Text>
-        <View style={styles.monthlyContainer}>
-          {monthly.map((item) => (
-            <View key={item.id} style={[styles.monthBox, !item.isActive && styles.inactiveMonthBox]}>
-              <Text style={[styles.monthText, !item.isActive && styles.inactiveMonthText]}>{item.month}</Text>
-              <Text style={[styles.amountText, !item.isActive && styles.inactiveAmountText]}>{item.amount}</Text>
-            </View>
+        
+        <ScrollView 
+          horizontal={true} 
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={styles.monthlyContainerContent}
+        >
+
+          {monthlyData.map((item) => (
+            <TouchableOpacity key={item.id} style={[styles.monthBox, !item.isActive && styles.inactiveMonthBox]}>
+              <View>
+                <Text style={[styles.monthText, !item.isActive && styles.inactiveMonthText]}>{item.month}</Text>
+                <Text style={[styles.amountText, !item.isActive && styles.inactiveAmountText]}>{item.amount}</Text>
+              </View>
+            </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       </View>
 
-            <View style={styles.holdButtonContainer}>
+      <View style={styles.holdButtonContainer}>
         <TouchableOpacity style={styles.holdButton}>
           <LinearGradient
             colors={['#3558FF', 'transparent']}

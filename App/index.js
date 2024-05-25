@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import styles from '../styles/homeStyles';
 import RecordExpense from '../Components/recordExpense';
+import CategoryGpt from '../Components/categoryGpt';
+import { TranscriptionProvider } from '../contexts/TranscriptionContext';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 
@@ -25,12 +27,16 @@ export default function App() {
                 id: `${user.user_id}-${category}-${item.name}`,
                 category: category,
                 amount: `$${item.price.toFixed(2)}`,
+                date: new Date(item.date), // Ensure date is processed correctly
                 icon: getCategoryIcon(category), // Function to get icon based on category
                 color: getCategoryColor(category) // Function to get color based on category
               });
             });
           }
         });
+
+        // Sort category data by most recent date
+        categoryData.sort((a, b) => b.date - a.date);
 
         // Process monthly data
         const monthlyData = users.map(user => ({
@@ -118,7 +124,10 @@ export default function App() {
           </ScrollView>
         </View>
 
-        <RecordExpense />
+        <TranscriptionProvider>
+          <RecordExpense />
+          <CategoryGpt />
+        </TranscriptionProvider>
 
         <FlatList
           data={categories}

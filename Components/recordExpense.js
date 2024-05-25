@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Audio } from 'expo-av';
 import styles from '../styles/recordExpense';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranscription } from '../contexts/TranscriptionContext';
 
 const RecordExpense = () => {
   const [recording, setRecording] = useState(null);
-  const [transcription, setTranscription] = useState('');
+  const { updateTranscription } = useTranscription();
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -87,7 +88,7 @@ const RecordExpense = () => {
 
       const transcriptionData = await transcriptionResponse.json();
       console.log(transcriptionData.text);
-      setTranscription(transcriptionData.text || 'No transcription available');
+      updateTranscription(transcriptionData.text || 'No transcription available');
     } catch (error) {
       console.error('Error while processing audio:', error);
     }
@@ -110,11 +111,7 @@ const RecordExpense = () => {
         </Text>
         </LinearGradient>
       </TouchableOpacity>
-      {transcription ? (
-        <Text style={styles.transcription}>Transcription: {transcription}</Text>
-      ) : null}
     </View>
-
   );
 };
 

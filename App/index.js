@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAreaView} from 'react-native';
 import styles from '../styles/homeStyles';
 import RecordExpense from '../Components/recordExpense';
-import { LinearGradient } from 'expo-linear-gradient';
+import CategoryGpt from '../Components/categoryGpt';
+import { TranscriptionProvider } from '../contexts/TranscriptionContext';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 const categoryData = [
@@ -73,7 +74,10 @@ export default function App() {
         </ScrollView>
       </View>
 
-      <RecordExpense />
+      <TranscriptionProvider>
+        <RecordExpense />
+        <CategoryGpt />
+      </TranscriptionProvider>
 
       <FlatList
         data={categories}

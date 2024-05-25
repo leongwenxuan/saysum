@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAreaView} from 'react-native';
 import styles from '../styles/homeStyles';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 const categoryData = [
   { id: '1', category: 'Clothes', amount: '$1,500.00', icon: '👕', color: '#FF6347' },
@@ -16,9 +17,13 @@ const categoryData = [
 const monthlyData = [
   { id: '1', month: 'May', amount: '$1,500.00', isActive: true },
   { id: '2', month: 'Jun', amount: '$1,200.00', isActive: false },
+  { id: '3', month: 'Jul', amount: '$1,600.00', isActive: false },
 ];
 
 export default function App() {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+
   const [categories, setCategories] = useState(categoryData);
   const [monthly, setMonthly] = useState(monthlyData);
 
@@ -35,8 +40,15 @@ export default function App() {
     </View>
   );
 
+  const handleMonthSpent = (item) => {
+    router.push('monthspent', { month: 'June', amount: '$1,200.00' });
+  }
+
+
   return (
     <View style={styles.container}>
+
+    <SafeAreaView >
       <View style={styles.header}>
         <Text style={styles.title}>SaySum</Text>
         <Text style={styles.subtitle}>Monthly Spent</Text>
@@ -48,7 +60,9 @@ export default function App() {
         >
 
           {monthlyData.map((item) => (
-            <TouchableOpacity key={item.id} style={[styles.monthBox, !item.isActive && styles.inactiveMonthBox]}>
+            <TouchableOpacity key={item.id} style={[styles.monthBox, !item.isActive && styles.inactiveMonthBox]} 
+            onPress={handleMonthSpent}
+            >
               <View>
                 <Text style={[styles.monthText, !item.isActive && styles.inactiveMonthText]}>{item.month}</Text>
                 <Text style={[styles.amountText, !item.isActive && styles.inactiveAmountText]}>{item.amount}</Text>
@@ -77,6 +91,9 @@ export default function App() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
       />
+
+    </SafeAreaView>
     </View>
+
   );
 }

@@ -10,14 +10,6 @@ export default StyleSheet.create({
     marginBottom: 20,
     position: 'relative',
   },
-  notch: {
-    width: 80,
-    height: 10,
-    backgroundColor: '#000',
-    borderRadius: 5,
-    marginVertical: 20,
-    alignSelf: 'center',
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',

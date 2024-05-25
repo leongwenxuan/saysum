@@ -1,32 +1,78 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAreaView} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import styles from '../styles/homeStyles';
 import RecordExpense from '../Components/recordExpense';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-
-const categoryData = [
-  { id: '1', category: 'Clothes', amount: '$1,500.00', icon: '👕', color: '#FF6347' },
-  { id: '2', category: 'Gadgets', amount: '$1,500.00', icon: '📱', color: '#20B2AA' },
-  { id: '3', category: 'Food', amount: '$1,500.00', icon: '🍔', color: '#FFD700' },
-  { id: '4', category: 'Travel', amount: '$1,500.00', icon: '✈️', color: '#87CEEB' },
-  { id: '5', category: 'Transportation', amount: '$1,500.00', icon: '🚗', color: '#FFA500' },
-  { id: '6', category: 'Personal Care', amount: '$1,500.00', icon: '🧴', color: '#32CD32' },
-  { id: '7', category: 'Clothes', amount: '$1,500.00', icon: '👕', color: '#FF6347' },
-];
-
-const monthlyData = [
-  { id: '1', month: 'May', amount: '$1,500.00', isActive: true },
-  { id: '2', month: 'Jun', amount: '$1,200.00', isActive: false },
-  { id: '3', month: 'Jul', amount: '$1,600.00', isActive: false },
-];
+import axios from 'axios';
+import { useRouter } from 'expo-router';
 
 export default function App() {
+  const [categories, setCategories] = useState([]);
+  const [monthly, setMonthly] = useState([]);
   const router = useRouter();
-  const params = useLocalSearchParams();
 
-  const [categories, setCategories] = useState(categoryData);
-  const [monthly, setMonthly] = useState(monthlyData);
+  useEffect(() => {
+    const url = 'http://192.168.80.249:5011/users';
+    axios.get(url)
+      .then(response => {
+        const users = response.data;
+        
+        // Process category data
+        const categoryData = [];
+        users.forEach(user => {
+          for (const category in user.items) {
+            user.items[category].forEach(item => {
+              categoryData.push({
+                id: `${user.user_id}-${category}-${item.name}`,
+                category: category,
+                amount: `$${item.price.toFixed(2)}`,
+                icon: getCategoryIcon(category), // Function to get icon based on category
+                color: getCategoryColor(category) // Function to get color based on category
+              });
+            });
+          }
+        });
+
+        // Process monthly data
+        const monthlyData = users.map(user => ({
+          id: user.user_id,
+          month: user.monthly_spending.month,
+          amount: `$${user.monthly_spending.overall_spent.toFixed(2)}`,
+          isActive: user.monthly_spending.month === 'April' // Example logic for active month
+        }));
+
+        setCategories(categoryData);
+        setMonthly(monthlyData);
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error);
+      });
+  }, []);
+
+  const getCategoryIcon = (category) => {
+    // Return appropriate icon for each category
+    const icons = {
+      Clothes: '👕',
+      Gadgets: '📱',
+      Food: '🍔',
+      Travel: '✈️',
+      Transportation: '🚗',
+      Personal: '🧴'
+    };
+    return icons[category] || '❓';
+  };
+
+  const getCategoryColor = (category) => {
+    // Return appropriate color for each category
+    const colors = {
+      Clothes: '#FF6347',
+      Gadgets: '#20B2AA',
+      Food: '#FFD700',
+      Travel: '#87CEEB',
+      Transportation: '#FFA500',
+      Personal: '#32CD32'
+    };
+    return colors[category] || '#000';
+  };
 
   const renderCategoryItem = ({ item }) => (
     <View style={styles.item}>
@@ -42,48 +88,45 @@ export default function App() {
   );
 
   const handleMonthSpent = (item) => {
-    router.push('monthspent', { month: 'June', amount: '$1,200.00' });
-  }
-
+    router.push('monthspent', { month: item.month, amount: item.amount });
+  };
 
   return (
     <View style={styles.container}>
+      <SafeAreaView>
+        <View style={styles.header}>
+          <Text style={styles.title}>SaySum</Text>
+          <Text style={styles.subtitle}>Monthly Spent</Text>
+          
+          <ScrollView 
+            horizontal={true} 
+            showsHorizontalScrollIndicator={false} 
+            contentContainerStyle={styles.monthlyContainerContent}
+          >
+            {monthly.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={[styles.monthBox, !item.isActive && styles.inactiveMonthBox]} 
+                onPress={() => handleMonthSpent(item)}
+              >
+                <View>
+                  <Text style={[styles.monthText, !item.isActive && styles.inactiveMonthText]}>{item.month}</Text>
+                  <Text style={[styles.amountText, !item.isActive && styles.inactiveAmountText]}>{item.amount}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
-    <SafeAreaView >
-      <View style={styles.header}>
-        <Text style={styles.title}>SaySum</Text>
-        <Text style={styles.subtitle}>Monthly Spent</Text>
-        
-        <ScrollView 
-          horizontal={true} 
-          showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={styles.monthlyContainerContent}
-        >
+        <RecordExpense />
 
-          {monthlyData.map((item) => (
-            <TouchableOpacity key={item.id} style={[styles.monthBox, !item.isActive && styles.inactiveMonthBox]} 
-            onPress={handleMonthSpent}
-            >
-              <View>
-                <Text style={[styles.monthText, !item.isActive && styles.inactiveMonthText]}>{item.month}</Text>
-                <Text style={[styles.amountText, !item.isActive && styles.inactiveAmountText]}>{item.amount}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      <RecordExpense />
-
-      <FlatList
-        data={categories}
-        renderItem={renderCategoryItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-      />
-
-    </SafeAreaView>
+        <FlatList
+          data={categories}
+          renderItem={renderCategoryItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.list}
+        />
+      </SafeAreaView>
     </View>
-
   );
 }

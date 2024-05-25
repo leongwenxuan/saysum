@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAreaView} from 'react-native';
 import styles from '../styles/homeStyles';
+import RecordExpense from '../Components/recordExpense';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -72,18 +73,7 @@ export default function App() {
         </ScrollView>
       </View>
 
-      <View style={styles.holdButtonContainer}>
-        <TouchableOpacity style={styles.holdButton}>
-          <LinearGradient
-            colors={['#3558FF', 'transparent']}
-            style={styles.holdButtonGradient}
-            start={{ x: 0.5, y: 0.5 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <Text style={styles.holdText}>Hold to SaySum...</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+      <RecordExpense />
 
       <FlatList
         data={categories}

@@ -3,67 +3,129 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAre
 import styles from '../styles/homeStyles';
 import RecordExpense from '../Components/recordExpense';
 import { TranscriptionProvider } from '../contexts/TranscriptionContext';
-import axios from 'axios';
 import { useRouter } from 'expo-router';
-import { useAppContext } from '../contexts/context';
+// import { useAppContext } from '../contexts/context';
 
 export default function App() {
+  const [users, setUsers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [monthly, setMonthly] = useState([]);
-  // const { setCurrentStep } = useAppContext();
   const router = useRouter();
 
   useEffect(() => {
-    const url = 'http://172.20.10.11:5011/users';
-    axios.get(url)
-      .then(response => {
-        const users = response.data;
+    // Hardcoded data
+    const initialUsers = [
+      {
+        user_id: '1',
+        name: 'John Doe',
+        languages: [{ language: 'English' }],
+        budget: 1000,
+        monthly_spending: [
+          {
+            month: 'April',
+            overall_spent: 750.75,
+            percentage_overbudget: 25.08,
+            weekly_spending: [
+              { week: 1, spent: 200 },
+              { week: 2, spent: 150 },
+              { week: 3, spent: 250 },
+              { week: 4, spent: 150 },
+            ],
+            budget_goal: 800,
+          },
+          {
+            month: 'March',
+            overall_spent: 600.50,
+            percentage_overbudget: 0,
+            weekly_spending: [
+              { week: 1, spent: 150 },
+              { week: 2, spent: 200 },
+              { week: 3, spent: 100 },
+              { week: 4, spent: 150 },
+            ],
+            budget_goal: 800,
+          },
+          {
+            month: 'February',
+            overall_spent: 900.25,
+            percentage_overbudget: 12.53,
+            weekly_spending: [
+              { week: 1, spent: 300 },
+              { week: 2, spent: 200 },
+              { week: 3, spent: 250 },
+              { week: 4, spent: 150 },
+            ],
+            budget_goal: 800,
+          },
+        ],
+        items: {
+          Clothes: [
+            { name: 'Shirt', price: 29.99, date: new Date('2023-04-15') },
+            { name: 'Jeans', price: 49.99, date: new Date('2023-04-20') },
+            { name: 'Jacket', price: 89.99, date: new Date('2023-04-25') },
+          ],
+          Gadgets: [
+            { name: 'Phone', price: 699.99, date: new Date('2023-04-10') },
+            { name: 'Tablet', price: 299.99, date: new Date('2023-04-18') },
+          ],
+          Food: [
+            { name: 'Burger', price: 9.99, date: new Date('2023-04-05') },
+            { name: 'Pizza', price: 12.99, date: new Date('2023-04-12') },
+            { name: 'Coffee', price: 4.99, date: new Date('2023-04-22') },
+          ],
+          Travel: [
+            { name: 'Flight', price: 199.99, date: new Date('2023-04-20') },
+            { name: 'Hotel', price: 150.00, date: new Date('2023-04-22') },
+          ],
+          Transportation: [
+            { name: 'Taxi', price: 25.00, date: new Date('2023-04-15') },
+            { name: 'Bus', price: 2.50, date: new Date('2023-04-10') },
+          ],
+          Personal: [
+            { name: 'Shampoo', price: 5.99, date: new Date('2023-04-15') },
+            { name: 'Toothpaste', price: 3.49, date: new Date('2023-04-20') },
+            { name: 'Perfume', price: 59.99, date: new Date('2023-04-25') },
+          ],
+        },
+      },
+    ];
 
-        if (!users || users.length === 0) {
-          // If data is null or empty, navigate to languageSelect
-          setCurrentStep('languageSelect');
-          router.replace('/languageSelect');
-          return;
-        }
-
-        // Process category data
-        const categoryData = [];
-        users.forEach(user => {
-          for (const category in user.items) {
-            user.items[category].forEach(item => {
-              categoryData.push({
-                id: `${user.user_id}-${category}-${item.name}`,
-                category: category,
-                amount: `$${item.price.toFixed(2)}`,
-                date: new Date(item.date), // Ensure date is processed correctly
-                icon: getCategoryIcon(category), // Function to get icon based on category
-                color: getCategoryColor(category) // Function to get color based on category
-              });
-            });
-          }
-        });
-
-        // Sort category data by most recent date
-        categoryData.sort((a, b) => b.date - a.date);
-
-        // Process monthly data
-        const monthlyData = users.map(user => ({
-          id: user.user_id,
-          month: user.monthly_spending.month,
-          amount: `$${user.monthly_spending.overall_spent.toFixed(2)}`,
-          isActive: user.monthly_spending.month === 'April' // Example logic for active month
-        }));
-
-        setCategories(categoryData);
-        setMonthly(monthlyData);
-      })
-      .catch(error => {
-        console.error('Error fetching users:', error);
-        // Handle error and navigate to languageSelect if necessary
-        // setCurrentStep('languageSelect');
-        router.replace('/languageSelect');
-      });
+    setUsers(initialUsers);
+    updateCategories(initialUsers);
+    updateMonthly(initialUsers);
   }, []);
+
+  const updateCategories = (users) => {
+    const categoryData = [];
+    users.forEach(user => {
+      for (const category in user.items) {
+        user.items[category].forEach(item => {
+          categoryData.push({
+            id: `${user.user_id}-${category}-${item.name}`,
+            category: category,
+            amount: `$${item.price.toFixed(2)}`,
+            date: new Date(item.date), // Ensure date is processed correctly
+            icon: getCategoryIcon(category), // Function to get icon based on category
+            color: getCategoryColor(category) // Function to get color based on category
+          });
+        });
+      }
+    });
+    categoryData.sort((a, b) => b.date - a.date);
+    setCategories(categoryData);
+  };
+
+  const updateMonthly = (users) => {
+    const monthlyData = users.flatMap(user =>
+      user.monthly_spending.map(month => ({
+        id: `${user.user_id}-${month.month}`,
+        month: month.month,
+        amount: `$${month.overall_spent.toFixed(2)}`,
+        isActive: month.month === 'April', // Example logic for active month
+      }))
+    );
+    setMonthly(monthlyData);
+  };
 
   const getCategoryIcon = (category) => {
     // Return appropriate icon for each category
@@ -109,6 +171,31 @@ export default function App() {
   };
 
   const handleExpenseUpdate = (transcription) => {
+    console.log('Confirmed transcription:', transcription);
+
+    // Hardcoded lunch expense
+    const lunchExpense = {
+      name: 'Lunch',
+      price: 5.00,
+      date: new Date().toISOString(),
+    };
+
+    // Update the users state
+    setUsers(prevUsers => {
+      const updatedUsers = prevUsers.map(user => {
+        if (user.user_id === '1') { // Assuming we're updating the user with ID '1'
+          const updatedItems = { ...user.items };
+          updatedItems.Food = [...updatedItems.Food, lunchExpense];
+          return { ...user, items: updatedItems };
+        }
+        return user;
+      });
+      updateCategories(updatedUsers);
+      updateMonthly(updatedUsers);
+      return updatedUsers;
+    });
+
+    // Redirect to confirmation page
     router.push({
       pathname: '/confirmation',
       params: { transcription }
@@ -117,7 +204,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
           <Text style={styles.title}>SaySum</Text>
           <Text style={styles.subtitle}>Monthly Spent</Text>
@@ -156,3 +243,5 @@ export default function App() {
     </View>
   );
 }
+
+

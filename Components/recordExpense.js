@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import { Audio } from 'expo-av';
 import styles from '../styles/recordExpense';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ const RecordExpense = ({ onUpdate }) => {
   const [recording, setRecording] = useState(null);
   const { updateTranscription } = useTranscription();
   const [isProcessing, setIsProcessing] = useState(false); // Add flag to prevent multiple calls
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -60,43 +61,13 @@ const RecordExpense = ({ onUpdate }) => {
     setIsProcessing(true);
 
     try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-
-      const key = 'audio.wav';
-      const endpoint = `https://api.jigsawstack.com/v1/store/file?key=${key}&overwrite=true`;
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'audio/wav',
-          'x-api-key': process.env.TRANSLATION_API_KEY,
-        },
-        body: blob,
-      };
-
-      const uploadResponse = await fetch(endpoint, options);
-      const data = await uploadResponse.json();
-      console.log('File storage key:', data.url);
-
-      const transcriptionResponse = await fetch('https://api.jigsawstack.com/v1/ai/transcribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.TRANSLATION_API_KEY,
-        },
-        body: JSON.stringify({
-          file_store_key: 'audio.wav',
-          language: 'en',
-          translate: true,
-        }),
-      });
-
-      const transcriptionData = await transcriptionResponse.json();
-      console.log(transcriptionData.text);
-      updateTranscription(transcriptionData.text || 'No transcription available');
+      // Simulating the transcription process with hardcoded data
+      const hardcodedTranscription = 'Wah today I had some amazing Wanton Noodles for Lunch and it only costed $5!';
+      console.log(hardcodedTranscription);
+      updateTranscription(hardcodedTranscription);
 
       if (onUpdate) {
-        onUpdate(transcriptionData.text || 'No transcription available');
+        onUpdate(hardcodedTranscription);
       }
 
     } catch (error) {
@@ -106,9 +77,22 @@ const RecordExpense = ({ onUpdate }) => {
     }
   };
 
+  const handleSimulateTranscription = () => {
+    const hardcodedTranscription = 'I ate Nasi Padang for dinner and it cost me $5';
+    console.log(hardcodedTranscription);
+    updateTranscription(hardcodedTranscription);
+
+    if (onUpdate) {
+      onUpdate(hardcodedTranscription);
+    }
+
+    setIsOverlayVisible(true);
+    setTimeout(() => setIsOverlayVisible(false), 3000); // Hide the overlay after 3 seconds
+  };
+
   return (
     <View style={styles.holdButtonContainer}>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.holdButton}
         onPressIn={startRecording}
         onPressOut={stopRecording}>
@@ -122,9 +106,72 @@ const RecordExpense = ({ onUpdate }) => {
             {recording ? 'Hold to SaySum...' : 'Listening to Sum'}
           </Text>
         </LinearGradient>
+      </TouchableOpacity> */}
+
+      {/* Button to trigger hardcoded transcription */}
+      <TouchableOpacity
+        style={styles.holdButton}
+        onPress={handleSimulateTranscription}
+      >
+        <LinearGradient
+          colors={['#3558FF', 'transparent']}
+          style={styles.holdButtonGradient}
+          start={{ x: 0.5, y: 0.5 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <Text style={styles.holdText}>
+            Hold to SaySum...
+          </Text>
+        </LinearGradient>
       </TouchableOpacity>
+
+      {/* Full-screen overlay */}
+      <Modal
+        visible={isOverlayVisible}
+        transparent={true}
+        animationType="fade"
+      >
+        <View style={overlayStyles.overlay}>
+          <LinearGradient
+            colors={['#3558FF', '#3558FF']}
+            style={overlayStyles.gradientBackground}
+          >
+            <Text style={overlayStyles.overlayText}>What did you spend today?</Text>
+            <View style={overlayStyles.spacer} />
+            <Text style={overlayStyles.loadingText}>...</Text>
+          </LinearGradient>
+        </View>
+      </Modal>
     </View>
   );
 };
+
+const overlayStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gradientBackground: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlayText: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  spacer: {
+    height: 200, // Adjust as needed for spacing
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 48,
+    textAlign: 'center',
+  },
+});
 
 export default RecordExpense;

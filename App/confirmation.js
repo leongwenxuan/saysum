@@ -8,27 +8,7 @@ const ConfirmationPage = () => {
 
   const handleYes = async () => {
     console.log('Confirmed transcription:', transcription);
-
-    try {
-      const response = await fetch('http://192.168.80.249:3000/api/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ transcription }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      console.log('Upload successful:', data);
-
-      // Redirect or perform any other actions needed
-    } catch (error) {
-      console.error('Error uploading transcription:', error);
-    }
+    router.back();
   };
 
   const handleNo = () => {
@@ -54,7 +34,7 @@ const ConfirmationPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E90FF', // Blue background color
+    backgroundColor: '#3558FF', // Blue background color
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,

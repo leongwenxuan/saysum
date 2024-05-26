@@ -58,13 +58,14 @@ export default StyleSheet.create({
   holdButton: {
     width: 200,
     height: 200,
-    borderRadius: 100,
+    borderRadius: 20,
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },
   holdButtonGradient: {
-    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -73,15 +74,20 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
+  listContainer: {
+    flex: 1,
+    marginTop: 20,
+  },
   list: {
-    paddingVertical: 10,
+    paddingBottom: 10,
+    paddingTop: 10,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#ECECEC',
     padding: 15,
-    marginVertical: 10,
+    marginVertical: 5,
     borderRadius: 10,
   },
   iconContainer: {
@@ -99,15 +105,15 @@ export default StyleSheet.create({
   },
   category: {
     fontSize: 18,
-    color: '#fff',
+    color: '#333',
   },
   amount: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#333',
   },
   indicator: {
-    width: 5,
+    width: 10,
     height: '100%',
     borderRadius: 5,
   },

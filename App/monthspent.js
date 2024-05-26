@@ -14,8 +14,8 @@ export default function MonthSpentScreen() {
       </TouchableOpacity>
       <Text style={styles.title}>Monthly Spent</Text>
       <View style={styles.overallContainer}>
-        <Text style={styles.overallTitle}>Overall in May</Text>
-        <Text style={styles.overallAmount}>$3,500.00</Text>
+        <Text style={styles.overallTitle}>Overall in April</Text>
+        <Text style={styles.overallAmount}>$750.75</Text>
         <Text style={styles.overallPercentage}>15%</Text>
       </View>
       <View style={styles.chartContainer}>
@@ -39,13 +39,13 @@ export default function MonthSpentScreen() {
       <View style={styles.card}>
         <View style={styles.cardIcon} />
         <View style={styles.cardTextContainer}>
-          <Text style={styles.cardAmount}>$875.23</Text>
+          <Text style={styles.cardAmount}>$187.5</Text>
           <Text style={styles.cardLabel}>Weekly Spent (average)</Text>
         </View>
       </View>
       <View style={styles.card}>
         <View style={styles.cardTextContainer}>
-          <Text style={styles.cardAmount}>$3,000.00</Text>
+          <Text style={styles.cardAmount}>$700</Text>
           <Text style={styles.cardLabel}>Budget Goal</Text>
         </View>
       </View>

@@ -10,7 +10,7 @@ import { useAppContext } from '../contexts/context';
 export default function App() {
   const [categories, setCategories] = useState([]);
   const [monthly, setMonthly] = useState([]);
-  const { setCurrentStep } = useAppContext();
+  // const { setCurrentStep } = useAppContext();
   const router = useRouter();
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function App() {
       .catch(error => {
         console.error('Error fetching users:', error);
         // Handle error and navigate to languageSelect if necessary
-        setCurrentStep('languageSelect');
+        // setCurrentStep('languageSelect');
         router.replace('/languageSelect');
       });
   }, []);

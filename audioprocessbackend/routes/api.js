@@ -4,15 +4,12 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 // Replace with your actual MongoDB connection string
-const mongoURI = '';
+const mongoURI = process.env.MONGO_URI;
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const app = express();
 const router = express.Router();
 const port = 3000;
-
-app.use(bodyParser.json({ limit: '50mb' })); // Increase limit if needed
-app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
 const UserSchema = new mongoose.Schema({
   user_id: String,

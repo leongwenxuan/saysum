@@ -11,6 +11,10 @@ export default function Layout() {
         name="monthspent" 
         options={{ headerShown: false }} 
       />
+      <Stack.Screen 
+        name="confirmation" 
+        options={{ headerShown: false }} 
+      />
     </Stack>
   );
 }

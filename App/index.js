@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import styles from '../styles/homeStyles';
 import RecordExpense from '../Components/recordExpense';
-import CategoryGpt from '../Components/categoryGpt';
 import { TranscriptionProvider } from '../contexts/TranscriptionContext';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
@@ -97,6 +96,13 @@ export default function App() {
     router.push('monthspent', { month: item.month, amount: item.amount });
   };
 
+  const handleExpenseUpdate = (transcription) => {
+    router.push({
+      pathname: '/confirmation',
+      params: { transcription }
+    });
+  };
+
   return (
     <View style={styles.container}>
       <SafeAreaView>
@@ -125,8 +131,7 @@ export default function App() {
         </View>
 
         <TranscriptionProvider>
-          <RecordExpense />
-          <CategoryGpt />
+          <RecordExpense onUpdate={handleExpenseUpdate} />
         </TranscriptionProvider>
 
         <FlatList

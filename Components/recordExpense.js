@@ -4,10 +4,12 @@ import { Audio } from 'expo-av';
 import styles from '../styles/recordExpense';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranscription } from '../contexts/TranscriptionContext';
+import { useRouter } from 'expo-router';
 
-const RecordExpense = () => {
+const RecordExpense = ({ onUpdate }) => {
   const [recording, setRecording] = useState(null);
   const { updateTranscription } = useTranscription();
+  const [isProcessing, setIsProcessing] = useState(false); // Add flag to prevent multiple calls
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -54,6 +56,9 @@ const RecordExpense = () => {
   };
 
   const processAudio = async (uri) => {
+    if (isProcessing) return; // Prevent multiple calls
+    setIsProcessing(true);
+
     try {
       const response = await fetch(uri);
       const blob = await response.blob();
@@ -64,7 +69,7 @@ const RecordExpense = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'audio/wav',
-          'x-api-key': 'sk_83817fa5580adfd33c92236bd5d059109b2c87c457f55636fb1663605fb8912387feb40ee087f7d0a72416ecfc3d8ce1a1d90668675ef9ea6d9fc559bd719092024nssPTqbzBvwPToaHEN',
+          'x-api-key': process.env.TRANSLATION_API_KEY,
         },
         body: blob,
       };
@@ -77,7 +82,7 @@ const RecordExpense = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': 'sk_83817fa5580adfd33c92236bd5d059109b2c87c457f55636fb1663605fb8912387feb40ee087f7d0a72416ecfc3d8ce1a1d90668675ef9ea6d9fc559bd719092024nssPTqbzBvwPToaHEN',
+          'x-api-key': process.env.TRANSLATION_API_KEY,
         },
         body: JSON.stringify({
           file_store_key: 'audio.wav',
@@ -89,8 +94,15 @@ const RecordExpense = () => {
       const transcriptionData = await transcriptionResponse.json();
       console.log(transcriptionData.text);
       updateTranscription(transcriptionData.text || 'No transcription available');
+
+      if (onUpdate) {
+        onUpdate(transcriptionData.text || 'No transcription available');
+      }
+
     } catch (error) {
       console.error('Error while processing audio:', error);
+    } finally {
+      setIsProcessing(false); // Reset the flag after processing
     }
   };
 
@@ -101,14 +113,14 @@ const RecordExpense = () => {
         onPressIn={startRecording}
         onPressOut={stopRecording}>
         <LinearGradient
-        colors={['#3558FF', 'transparent']}
-        style={styles.holdButtonGradient}
-        start={{ x: 0.5, y: 0.5 }}
-        end={{ x: 1, y: 1 }}
+          colors={['#3558FF', 'transparent']}
+          style={styles.holdButtonGradient}
+          start={{ x: 0.5, y: 0.5 }}
+          end={{ x: 1, y: 1 }}
         >
-        <Text style={styles.holdText}>
-          {recording ? 'Hold to SaySum...' : 'Listening to Sum'}
-        </Text>
+          <Text style={styles.holdText}>
+            {recording ? 'Hold to SaySum...' : 'Listening to Sum'}
+          </Text>
         </LinearGradient>
       </TouchableOpacity>
     </View>

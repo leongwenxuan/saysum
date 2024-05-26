@@ -6,18 +6,27 @@ import CategoryGpt from '../Components/categoryGpt';
 import { TranscriptionProvider } from '../contexts/TranscriptionContext';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import { useAppContext } from '../contexts/context';
 
 export default function App() {
   const [categories, setCategories] = useState([]);
   const [monthly, setMonthly] = useState([]);
+  const { setCurrentStep } = useAppContext();
   const router = useRouter();
 
   useEffect(() => {
-    const url = 'http://192.168.80.249:5011/users';
+    const url = 'http://172.20.10.11:5011/users';
     axios.get(url)
       .then(response => {
         const users = response.data;
-        
+
+        if (!users || users.length === 0) {
+          // If data is null or empty, navigate to languageSelect
+          setCurrentStep('languageSelect');
+          router.replace('/languageSelect');
+          return;
+        }
+
         // Process category data
         const categoryData = [];
         users.forEach(user => {
@@ -51,6 +60,9 @@ export default function App() {
       })
       .catch(error => {
         console.error('Error fetching users:', error);
+        // Handle error and navigate to languageSelect if necessary
+        setCurrentStep('languageSelect');
+        router.replace('/languageSelect');
       });
   }, []);
 
@@ -94,7 +106,7 @@ export default function App() {
   );
 
   const handleMonthSpent = (item) => {
-    router.push('monthspent', { month: item.month, amount: item.amount });
+    router.push('/monthspent', { month: item.month, amount: item.amount });
   };
 
   return (
